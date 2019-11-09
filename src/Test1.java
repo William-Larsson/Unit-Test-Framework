@@ -10,10 +10,9 @@ public class Test1 implements TestClass {
 	   myInt = new MyInt();
 	}
 
-	/*
 	public void tearDown() {
 	  myInt = null;
-	}*/
+	}
 
 	//Test that should succeed
 	public boolean testInitialisation() {

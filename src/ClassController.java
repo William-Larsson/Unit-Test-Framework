@@ -1,7 +1,9 @@
 /**
+ * A class that that handles all the functionality we need to examine
+ * a given class that's implementing the TestClass interface.
  *
  * Author: William Larsson
- * Date: 2019-11-XX
+ * Date: 2019-11-08
  */
 import se.umu.cs.unittester.TestClass;
 import java.lang.reflect.*;
@@ -25,6 +27,7 @@ public class ClassController{
             methods = cl.getMethods();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+
             System.out.println("Class can not be found.");
         }
     }

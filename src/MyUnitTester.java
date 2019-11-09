@@ -1,3 +1,5 @@
+import javax.swing.*;
+
 /**
  * Main file for the Unit-test system. Starts up the main thread used for the
  * logic- and GUI-parts of the program.
@@ -8,7 +10,7 @@
 
 public class MyUnitTester {
     public static void main(String[] args) {
-        ThreadController tc = new ThreadController();
-        tc.startThreads();
+        SwingUtilities.invokeLater(() ->
+                new UserInterface("Unit test framework").listen());
     }
 }
