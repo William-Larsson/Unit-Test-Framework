@@ -8,10 +8,12 @@ public class Test1 implements TestClass {
 
 	public void setUp() {
 	   myInt = new MyInt();
+        System.out.println("SETUP");
 	}
 
 	public void tearDown() {
 	  myInt = null;
+        System.out.println("TEARDOWN");
 	}
 
 	//Test that should succeed

@@ -10,40 +10,39 @@ import java.lang.reflect.*;
 import java.util.ArrayList;
 
 
+/**
+ *
+ */
 public class ClassController{
     private String className;
-    private Class<?> cl = null;
+    private Class<?> cl;
     private TestClass classInstance;
     private Method[] methods;
+    private String invalidCause;
 
     /**
      * Create an instance of the given class, save its name and all of its methods.
      * @param className = the name of the class.
      */
-    public ClassController(String className){
+    public ClassController(String className, Class cl){
         this.className = className;
-        try {
-            cl = Class.forName(className);
-            methods = cl.getMethods();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-
-            System.out.println("Class can not be found.");
-        }
+        this.cl = cl;
+        methods = cl.getMethods();
     }
 
 
     /**
      * A method for validating if the class is a valid test class and not an interface or GUI and makes
      * sure it implements the TestClass interface.
+     * Also saves the reason why class fails the validation test in a local variable.
      * @return True if the class is a valid test class, otherwise false.
      */
     public boolean isValidTestClass (){
         if (cl.isInterface()) {
-            System.out.println(className + " is an interface and cannot be instantiated.");
+            invalidCause = className + " is an interface and cannot be instantiated.";
             return false;
         } else if (!TestClass.class.isAssignableFrom(cl)){
-            System.out.println(className + "does not implement the TestClass interface.");
+            invalidCause = className + "does not implement the TestClass interface.";
             return false;
         } else {
             try {
@@ -51,10 +50,8 @@ public class ClassController{
                 classInstance = (TestClass) construct.newInstance();
 
                 if (classInstance instanceof java.awt.Component) {
-                    System.out.println(className + " is a GUI component.");
+                    invalidCause = className + " is a GUI component.";
                     return false;
-                } else {
-                    System.out.println(cl + " is NOT a GUI component.");
                 }
             } catch (NoSuchMethodException | IllegalAccessException |
                     InstantiationException | InvocationTargetException e) {
@@ -108,6 +105,7 @@ public class ClassController{
     public boolean invokeMethodByName(String name) throws NoSuchMethodException,
             IllegalAccessException, InvocationTargetException
     {
+        System.out.println(classInstance.getClass().getMethod(name));
         boolean result = (boolean) classInstance.getClass().getMethod(name).invoke(classInstance);
         System.out.println(name + "-method returned a " + result);
         return result;
@@ -126,5 +124,14 @@ public class ClassController{
             e.printStackTrace();
             System.out.println("Method " + name + " threw a " + e.getCause());
         }
+    }
+
+
+    /**
+     *
+     * @return
+     */
+    public String getInvalidCause(){
+        return invalidCause;
     }
 }

@@ -2,17 +2,31 @@ import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
-public class LogicWorker extends SwingWorker {
+public class LogicWorker extends SwingWorker<String, Object> {
+    private JTextArea textArea;
     private ClassController cc;
     private Method method;
+    private Score score;
     private boolean setUp;
     private boolean tearDown;
+    private boolean result;
 
 
-    public LogicWorker (ClassController cc, Method method){
-        this.cc = cc;
-        this.method = method;
+    /**
+     *
+     * @param cc
+     * @param method
+     * @param score
+     */
+    public LogicWorker (JTextArea textArea, ClassController cc, Method method, Score score){
+        this.textArea = textArea;
+        this.cc       = cc;
+        this.method   = method;
+        this.score    = score;
+        this.result   = false;
+
         ArrayList<String> methodNames = cc.methodsToString();
 
         if (methodNames.contains("setUp")){
@@ -24,52 +38,70 @@ public class LogicWorker extends SwingWorker {
     }
 
 
+    /**
+     *
+     * @return
+     */
     @Override
-    protected Integer doInBackground(){
+    protected String doInBackground(){
         if (cc.isValidTestClass()) {
-            int success = 0, failed = 0, except = 0;
-            boolean result = false;
-
             if (setUp){
                 cc.setUpTearDown("setUp");
             }
 
             try{
                 result = cc.invokeMethodByName(method.getName());
-            } catch (NoSuchMethodException |
-                    IllegalAccessException |
-                    InvocationTargetException e)
-            {
-                e.printStackTrace();
-                System.out.println(method.getName() + "-method threw a " + e.getCause() + ".");
 
                 if (tearDown){
                     cc.setUpTearDown("tearDown");
                 }
-                except++;
-            }
 
-            if (tearDown){
-                cc.setUpTearDown("tearDown");
+                if (result){
+                    score.setSuccess(score.getSuccess() + 1);
+                    return method.getName() + ": Success.";
+                } else {
+                    score.setFail(score.getFail() + 1);
+                    return method.getName() + ": Fail.";
+                }
+            } catch (NoSuchMethodException |
+                    IllegalAccessException |
+                    InvocationTargetException e)
+            {
+                score.setException(score.getException() + 1);
+                if (tearDown){
+                    cc.setUpTearDown("tearDown");
+                }
+                return method.getName() + ": Fail. Generated a " + e.getCause();
             }
-
-            if (result){
-                success++;
-            } else {
-                failed++;
-            }
-            System.out.println("\n\nTHIS IS THE RESULT: " + "\nSuccess: " + success +
-                    "\nFailed: " + failed + "\nException: " + except + "\n");
         }
-        return 0;
+        return "Invalid test class.\n" + cc.getInvalidCause();
     }
 
 
-
+    /**
+     *
+     */
     protected void done(){
-        // TODO: Update the UI elements
-        //  output.append(the result)
+        try {
+            String returnValue = get();
+
+            if (!returnValue.startsWith("Invalid test class")){
+
+                textArea.append(returnValue + "\n");
+
+            } else{
+                JOptionPane.showMessageDialog(null, returnValue,
+                        "An error occurred.", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            System.out.println("Thread was interrupted.");
+        }
     }
+
+
+
+
 
     // TODO: Do I need an execute method as well?   -- no, but .execute() is called when
     //       I want to call doInBackground and when that is finished, done() will be called
