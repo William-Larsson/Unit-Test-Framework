@@ -9,10 +9,6 @@ import se.umu.cs.unittester.TestClass;
 import java.lang.reflect.*;
 import java.util.ArrayList;
 
-
-/**
- *
- */
 public class ClassController{
     private String className;
     private Class<?> cl;
@@ -32,7 +28,7 @@ public class ClassController{
 
 
     /**
-     * A method for validating if the class is a valid test class and not an interface or GUI and makes
+     * A method for validating if the class is a valid test class and not an interface or LogicWorker.GUI and makes
      * sure it implements the TestClass interface.
      * Also saves the reason why class fails the validation test in a local variable.
      * @return True if the class is a valid test class, otherwise false.
@@ -42,7 +38,7 @@ public class ClassController{
             invalidCause = className + " is an interface and cannot be instantiated.";
             return false;
         } else if (!TestClass.class.isAssignableFrom(cl)){
-            invalidCause = className + "does not implement the TestClass interface.";
+            invalidCause = className + " does not implement the TestClass interface.";
             return false;
         } else {
             try {
@@ -50,7 +46,7 @@ public class ClassController{
                 classInstance = (TestClass) construct.newInstance();
 
                 if (classInstance instanceof java.awt.Component) {
-                    invalidCause = className + " is a GUI component.";
+                    invalidCause = className + " is a LogicWorker.GUI-component.";
                     return false;
                 }
             } catch (NoSuchMethodException | IllegalAccessException |
@@ -60,25 +56,6 @@ public class ClassController{
             }
         }
         return true;
-    }
-
-
-    /**
-     * Return the class object for usage in other parts of the system.
-     * @return The TestClass object.
-     */
-    public TestClass getClassObject(){
-        return classInstance;
-    }
-
-
-    /**
-     * Return all the methods that the class object has got. This includes methods from
-     * superclasses, such as Object.
-     * @return = An array of methods.
-     */
-    public Method[] getTestMethods(){
-        return methods;
     }
 
 
@@ -105,10 +82,7 @@ public class ClassController{
     public boolean invokeMethodByName(String name) throws NoSuchMethodException,
             IllegalAccessException, InvocationTargetException
     {
-        System.out.println(classInstance.getClass().getMethod(name));
-        boolean result = (boolean) classInstance.getClass().getMethod(name).invoke(classInstance);
-        System.out.println(name + "-method returned a " + result);
-        return result;
+        return (boolean) classInstance.getClass().getMethod(name).invoke(classInstance);
     }
 
 
@@ -128,8 +102,8 @@ public class ClassController{
 
 
     /**
-     *
-     * @return
+     * Returns the cause as to why a method is an invalid test class.
+     * @return = the cause, as a string.
      */
     public String getInvalidCause(){
         return invalidCause;

@@ -1,7 +1,7 @@
 import javax.swing.*;
 
 /**
- * Main file for the Unit-test system. Initializes and runs the GUI so that
+ * Main file for the Unit-test system. Initializes and runs the LogicWorker.GUI so that
  * its ready for user input.
  *
  * Author: William Larsson
