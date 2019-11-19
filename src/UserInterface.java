@@ -25,7 +25,7 @@ public class UserInterface extends JFrame implements ActionListener {
     public UserInterface(String title) {
         super(title);
 
-        dir = new File("./testClasses");
+        dir = new File(".");
         try {
             classLoader = URLClassLoader.newInstance(new URL[]{
                     dir.toURI().toURL()
@@ -80,7 +80,7 @@ public class UserInterface extends JFrame implements ActionListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        //textArea.setText(null);
+        textArea.setText(null);
         if (e.getSource() == button || e.getSource() == textInput){
             try {
                 String className = textInput.getText();
@@ -90,8 +90,10 @@ public class UserInterface extends JFrame implements ActionListener {
                         testClass.getMethods(), new Score()).execute();
 
             } catch (ClassNotFoundException ex){
-                JOptionPane.showMessageDialog(null, "Could not find any class named " +
-                                textInput.getText(),"An error occurred.", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null,
+                        "Could not find any class named " +
+                                "\"" + textInput.getText() + "\"",
+                        "An error occurred.", JOptionPane.ERROR_MESSAGE);
             }
         } else {
             System.out.println("Error: Action did not originate from Button or TextField");

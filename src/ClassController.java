@@ -1,14 +1,14 @@
+import se.umu.cs.unittester.TestClass;
+import java.lang.reflect.*;
+import java.util.ArrayList;
+
 /**
  * A class that that handles all the functionality we need to examine
  * a given class that's implementing the TestClass interface.
  *
  * Author: William Larsson
- * Date: 2019-11-08
+ * Date: 2019-11-12
  */
-import se.umu.cs.unittester.TestClass;
-import java.lang.reflect.*;
-import java.util.ArrayList;
-
 public class ClassController{
     private String className;
     private Class<?> cl;
@@ -46,7 +46,7 @@ public class ClassController{
                 classInstance = (TestClass) construct.newInstance();
 
                 if (classInstance instanceof java.awt.Component) {
-                    invalidCause = className + " is a LogicWorker.GUI-component.";
+                    invalidCause = className + " is a GUI-component.";
                     return false;
                 }
             } catch (NoSuchMethodException | IllegalAccessException |
